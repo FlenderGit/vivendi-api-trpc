@@ -1,6 +1,6 @@
 import { Agent } from "@openai/agents";
-import { tool_get_currency_rate } from "./currency.tool.js";
-import { gpt4_model } from "../../datasources/openai.js";
+import { tool_get_currency_rate } from "./currency.tool.ts";
+import { gpt4_model } from "../../datasources/openai.ts";
 
 const instructions = `\
 You are a currency exchange assistant.
@@ -31,4 +31,4 @@ export const agent_currency = new Agent({
   tools: [tool_get_currency_rate],
   model: gpt4_model,
   // handoffs: [agent_currency]
-})
+});

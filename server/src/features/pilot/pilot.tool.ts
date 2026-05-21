@@ -1,7 +1,7 @@
 import { tool } from "@openai/agents";
 import z from "zod";
 import { Temporal } from "@js-temporal/polyfill";
-import { pilot_repository } from "./pilot.repository.js";
+import { pilot_repository } from "./pilot.repository.ts";
 
 export const tool_pilot_get_previous_cases_from_supplier = tool({
   name: "get previous cases from supplier",
@@ -10,15 +10,16 @@ export const tool_pilot_get_previous_cases_from_supplier = tool({
     id: z.string(),
     // period: z.string()
   }),
-  execute: async function ({id}) {
+  execute: async function ({ id }) {
     const end = Temporal.Now.plainDateISO();
-    const start = end.subtract({ months: 4 });
+    const start = end.subtract({ years: 4 });
 
     const period = {
       start: start.toString(),
-      end: end.toString()
+      end: end.toString(),
     };
 
-    return pilot_repository.get_cases(id, period)
-  }
-})
+    const cases = await pilot_repository.get_cases(id, period);
+    return cases;
+  },
+});

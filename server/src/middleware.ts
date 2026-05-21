@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { t } from "./trpc.js";
+import { t } from "./trpc.ts";
 
 const loggerMiddleware = t.middleware(async ({ path, type, next, ctx }) => {
   const start = Date.now();
