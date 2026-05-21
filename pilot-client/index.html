@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>tRPC Client Test</title>
+</head>
+<body>
+  <h1>Test tRPC</h1>
+
+<script src="dist/trpc-client.iife.js"></script>
+<script>
+  console.log(TrpcClient);
+  TrpcClient.greet("jean").then(console.log).catch(console.error)
+
+function send_ai(query) {
+  TrpcClient.agent(query, data => {
+    if (data.type === "raw_model_stream_event" && data.data.type !== "output_text_delta")
+      console.log(data.data.delta)
+    // if (data.type === "raw_model_stream_event" && data.data.type === "response_done")
+    //   console.log(data.data.response)
+    // console.log(data)
+  })
+}
+
+
+</script>
+
+<button onclick="send_ai('Can you gimme the enterprise behind the siren number 818188955?', console.log)">
+    Send AI
+</button>
+
+
+<button onclick="TrpcClient.embedding()">
+    Send embedding
+</button>
+
+
+<button onclick="TrpcClient.currency()">
+    Send currency
+</button>
+
+</body>
+</html>

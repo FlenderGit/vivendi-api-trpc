@@ -1,0 +1,8 @@
+docker build -f server/Dockerfile -t mon-server:latest .
+
+
+> docker images node:24-slim --format "{{.Size}}"
+224MB
+
+> docker images mon-server:latest --format "{{.Size}}"
+264MB

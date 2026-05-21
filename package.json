@@ -1,0 +1,4 @@
+{
+  "name": "ai-workspace",
+  "workspaces": ["pilot-client", "server"]
+}
