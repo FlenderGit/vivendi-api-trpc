@@ -4,7 +4,8 @@ import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { env } from "./env.ts";
 import { app_router } from "./router.ts";
 import { createContext } from "./context.ts";
-import { pilot_db } from "./datasources/pilot_db.ts";
+import process from "node:process";
+import { logger } from "./logs.ts";
 
 const app = express();
 app.use(cors({ origin: "http://localhost:5173" }));
@@ -20,8 +21,8 @@ async function start() {
   // await pilot_db.connect();
   // console.log("mcp connected");
 
-  app.listen(env.PORT);
-  console.log("tRPC server: http://localhost:" + env.PORT);
+  app.listen(env.PORT, console.log);
+  logger.debug("tRPC server: http://localhost:" + env.PORT);
 }
 
 async function shutdown(signal: string) {

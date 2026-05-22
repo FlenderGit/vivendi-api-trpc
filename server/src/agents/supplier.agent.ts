@@ -20,21 +20,22 @@ const output_schema = z.object({
       end: z.iso.date(),
     }),
   })),
-  // actualities: z.array(z.object({
-  //   title: z.string(),
-  //   content: z.string(),
-  //   link: z.url()
-  // }))
+  actualities: z.array(z.object({
+    title: z.string(),
+    content: z.string(),
+    // link: z.url(),
+    link: z.string().optional(),
+  })).max(6),
 });
 
 export const agent_supplier = new Agent<AppContext, typeof output_schema>({
   name: "Supplier Agent",
   instructions:
-    "Don't allucinate nor create data. If a tool return no data, don't create data.",
+    "Don't hallucinate nor create data. If a tool return no data, don't create data. For actualities, return only the most significant one",
   model: gpt4_model,
   tools: [
     // tool_vies_check_vat_number,
-    // tool_pilot_get_previous_cases_from_supplier,
+    tool_pilot_get_previous_cases_from_supplier,
     // tool_files_csv_generate,
     tool_google_rss_search,
     // webSearchTool({
@@ -45,5 +46,5 @@ export const agent_supplier = new Agent<AppContext, typeof output_schema>({
     //   filters: { allowedDomains: [] }
     // }),
   ],
-  // outputType: output_schema,
+  outputType: output_schema,
 });

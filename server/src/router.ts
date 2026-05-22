@@ -1,8 +1,8 @@
-import { run } from "@openai/agents";
+import { run, type RunStreamEvent } from "@openai/agents";
+import { Repeater } from "@repeaterjs/repeater";
 import { t } from "./trpc.ts";
 import { z } from "zod";
 import { embedding_model } from "./datasources/openai.ts";
-import { one_pager_router } from "./features/one-pager/one-pager.router.ts";
 import { base_procedure } from "./middleware.ts";
 import { currency_router } from "./features/currency/currency.router.ts";
 import { agent_supplier } from "./agents/supplier.agent.ts";
@@ -22,22 +22,37 @@ export const app_router = t.router({
     .subscription(async function* (opts) {
       const { query } = opts.input;
 
-      const context: AppContext = {
-        generated_files: [],
-      };
+      type AgentStreamEvent =
+        | RunStreamEvent
+        | { type: "file_generated"; file: string };
 
-      const req = await run(agent_supplier, query, {
-        stream: true,
-        context,
-      });
-      for await (const event of req) {
+      const fileRepeater = new Repeater<AgentStreamEvent>(
+        async (push, stop) => {
+          const context: AppContext = {
+            generated_files: [],
+            emit_file: async (file) => {
+              context.generated_files.push(file);
+              await push({ type: "file_generated", file });
+            },
+          };
+
+          const req = await run(agent_supplier, query, {
+            stream: true,
+            context,
+          });
+          for await (const event of req) {
+            await push(event);
+          }
+
+          stop();
+        },
+      );
+
+      for await (const event of fileRepeater) {
         yield event;
       }
-
-      console.log(context.generated_files);
     }),
 
-  one_pager: one_pager_router,
   currency: currency_router,
   pilot: pilot_router,
 });

@@ -9,7 +9,7 @@ import { ResultAsync } from "neverthrow";
 import type { AppRouter } from "../server/src/router.ts";
 
 const URL_API = "http://localhost:3000/trpc";
-const client = createTRPCProxyClient<AppRouter>({
+export const client = createTRPCProxyClient<AppRouter>({
   links: [
     splitLink({
       condition: (op) => op.type === "subscription",

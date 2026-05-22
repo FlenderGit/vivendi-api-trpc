@@ -3,6 +3,7 @@ import z from "zod";
 
 export interface AppContext {
   generated_files: string[];
+  emit_file: (file: string) => void;
 }
 
 export const tool_files_csv_generate = tool({

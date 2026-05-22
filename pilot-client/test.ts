@@ -11,7 +11,10 @@ const client = createTRPCProxyClient<AppRouter>({
     splitLink({
       condition: (op) => op.type === "subscription",
       false: httpLink({ url: "http://localhost:3000/trpc" }),
-      true: httpSubscriptionLink({ url: "http://localhost:3000/trpc" }),
+      true: httpSubscriptionLink({
+        url: "http://localhost:3000/trpc",
+        connectionParams: {},
+      }),
     }),
   ],
 });
@@ -19,8 +22,8 @@ const client = createTRPCProxyClient<AppRouter>({
 const result = await client.pilot.get_previous_cases.query({ id: "HAVAS" });
 console.log(result);
 
-client.agent.subscribe({
-  query: "Can you gimme the actuality of vivendi?",
+const unsub = client.agent.subscribe({
+  query: "Can you analyse me 'HAVAS'?",
 }, {
   onData: (e) => {
     if (
@@ -32,7 +35,17 @@ client.agent.subscribe({
         console.log(e.data);
       }
     }
+
+    if (e.type === "file_generated") {
+      console.log(e.file);
+    }
   },
-  onError: console.error,
+  onError: (err) => {
+    console.error(err);
+    unsub.unsubscribe();
+  },
   onComplete: console.log,
+  onConnectionStateChange: console.log,
+  onStarted: console.log,
+  onStopped: console.log,
 });

@@ -11,6 +11,8 @@ export const tool_pilot_get_previous_cases_from_supplier = tool({
     // period: z.string()
   }),
   execute: async function ({ id }) {
+    console.log("Tool mysql", id);
+
     const end = Temporal.Now.plainDateISO();
     const start = end.subtract({ years: 4 });
 
